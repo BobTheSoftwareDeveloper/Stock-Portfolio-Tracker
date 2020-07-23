@@ -9,7 +9,9 @@ import StockPage from './Components/StockPage'
 interface IState {
   authenticated: boolean,
   tab: number,
-  currentView: any
+  currentView: any,
+  portfolioList: string | undefined,
+  portfolio: [{}]
 }
 
 class App extends React.Component<{}, IState> {
@@ -17,17 +19,51 @@ class App extends React.Component<{}, IState> {
     super(props)
     this.state = ({
       authenticated: localStorage.getItem("authenticated") === "true" ? true : false,
-      tab: 0,
-      currentView: "Default text"
+      tab: localStorage.getItem("tab") !== null ? Number(localStorage.getItem("tab")) : 0,
+      currentView: "Default text",
+      portfolioList: localStorage.getItem("portfolioList") !== "" ? localStorage.getItem("portfolioList")?.toString() : "",
+      portfolio: [{}]
     })
   }
 
+  componentDidMount() {
+    const newValue = localStorage.getItem("tab") !== null ? Number(localStorage.getItem("tab")) : 0
+    if (this.state.authenticated) {
+      switch (newValue) {
+        case 0:
+          this.setState({
+            currentView: "Home PPPPAGE"
+          })
+          break;
+        case 1:
+          this.setState({
+            currentView: <PortfolioPage />
+          })
+          break;
+        case 2:
+          this.setState({
+            currentView: <StockPage />
+          })
+          break;
+      }
+    }
+  }
+
   render() {
+    const portfolio = this.state.portfolio
+
+    const updatePortfolio = (portfolio: [{}]) => {
+      this.setState({
+        portfolio: portfolio
+      })
+    }
+
     const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
-      console.log("change tab", newValue)
       this.setState({
         tab: newValue
       })
+
+      localStorage.setItem("tab", newValue.toString())
 
       if (this.state.authenticated) {
         switch (newValue) {
@@ -49,6 +85,7 @@ class App extends React.Component<{}, IState> {
         }
       }
     }
+    
 
     if (this.state.authenticated) {
       // login successful
@@ -64,7 +101,7 @@ class App extends React.Component<{}, IState> {
       return (
         <div className="App">
           <Header />
-          <LoginForm />
+          <LoginForm portfolio={this.state.portfolioList} />
           <Footer tab={this.state.tab} changeTab={changeTab} />
         </div>
       );
