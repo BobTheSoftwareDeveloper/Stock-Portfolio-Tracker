@@ -5,6 +5,7 @@ import Footer from './Components/Footer'
 import LoginForm from './Components/LoginForm'
 import PortfolioPage from './Components/PortfolioPage'
 import StockPage from './Components/StockPage'
+import HomePage from './Components/HomePage'
 
 interface IState {
   authenticated: boolean,
@@ -32,7 +33,7 @@ class App extends React.Component<{}, IState> {
       switch (newValue) {
         case 0:
           this.setState({
-            currentView: "Home PPPPAGE"
+            currentView: <HomePage />
           })
           break;
         case 1:
@@ -69,7 +70,7 @@ class App extends React.Component<{}, IState> {
         switch (newValue) {
           case 0:
             this.setState({
-              currentView: "Home PPPPAGE"
+              currentView: <HomePage />
             })
             break;
           case 1:

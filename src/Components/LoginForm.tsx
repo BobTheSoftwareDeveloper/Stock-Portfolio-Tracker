@@ -83,6 +83,8 @@ class LoginForm extends React.Component<any, IState> {
             console.log("login success")
             localStorage.setItem("authenticated", "true")
             localStorage.setItem("portfolioList", data)
+            localStorage.setItem("username", username) // need to remove until I figure out another way around this
+            localStorage.setItem("password", password) // need to remove until I figure out another way around this
             alert("login successful")
             window.location.reload(false)
           }
