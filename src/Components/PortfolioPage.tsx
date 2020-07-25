@@ -8,6 +8,7 @@ import EditDialog from './Dialogs/EditDialog'
 import { GetStock } from './Utilities/GetStock'
 import { Delete } from '@material-ui/icons'
 import DeleteDialog from './Dialogs/DeleteDialog'
+import Loading from './Loading'
 
 interface IStatePortfolio {
   [portfolioId: number]: {
@@ -39,7 +40,7 @@ const useStyles = makeStyles({
   },
   container: {
     marginTop: theme.spacing(2),
-    width: "100%",
+    width: "97%",
     textAlign: "center",
     marginBottom: theme.spacing(10),
     marginLeft: "auto",
@@ -58,8 +59,7 @@ const PortfolioPage = () => {
   const [currentQuantity, setCurrentQuantity] = React.useState<number>(0)
   const [stockData, setStockData] = React.useState<StockData>({})
   const [portfolioList, setPortfolioList] = React.useState<string | null>(localStorage.getItem("portfolioList"))
-
-  console.log("count", count)
+  const [check, setCheck] = React.useState<boolean>(false)
 
   const handleClickOpen = () => {
     setOpenAdd(true)
@@ -87,16 +87,14 @@ const PortfolioPage = () => {
         stockId: Number(currentStockId)
       })
       .then((res) => {
-        console.log("response", res)
-        console.log("response code", res.status)
         if (res.status === 201) {
-          alert("Successfully Added!")
+          setCheck(false)
+          setCount(count + 1)
         } else {
           alert("Failed!")
         }
         setCount(count + 1)
         setOpenAdd(false)
-        setCount(count + 1)
       })
       .catch((err) => {console.log(err.response)})
   }
@@ -117,8 +115,9 @@ const PortfolioPage = () => {
           const key = Number(currentValue)
           list += res.data[key] + ","
         })
-        localStorage.setItem("portfolioList", list)
         setPortfolioList(list)
+        localStorage.setItem("portfolioList", list)
+        setCheck(true)
       })
       .catch((error) => {console.log(error.response)})
   }, [count])
@@ -161,10 +160,11 @@ const PortfolioPage = () => {
   }, [count])
 
   var items: any = "";
+  console.log("check outside", check)
 
   // Check all objects are initialized
-  if (Object.keys(stockArray).length !== 0 && Object.keys(portfolioArray).length !== 0) {
-
+  if (Object.keys(stockArray).length !== 0 && Object.keys(portfolioArray).length !== 0 && check) {
+    console.log("check inside", check)
     // Objects initialized
     const userPortfolio = portfolioList?.split(",")
     var rows: JSX.Element[] = [];
@@ -268,7 +268,7 @@ const PortfolioPage = () => {
   } else {
     items = 
       <React.Fragment>
-        <br /><p>Loading...</p>
+        <br /><Loading />
       </React.Fragment>
     
   }

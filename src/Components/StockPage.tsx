@@ -5,6 +5,7 @@ import { GetStock } from './Utilities/GetStock'
 import DeleteDialog from './Dialogs/DeleteDialog'
 import { makeStyles } from '@material-ui/core/styles'
 import axios from 'axios'
+import Loading from './Loading'
 
 interface StockData {
   [index: number]: {
@@ -21,7 +22,7 @@ const useStyles = makeStyles({
   },
   container: {
     marginTop: theme.spacing(2),
-    width: "100%",
+    width: "97%",
     textAlign: "center",
     marginBottom: theme.spacing(10),
     marginLeft: "auto",
@@ -155,7 +156,8 @@ const StockPage = () => {
   } else {
     items = 
       <React.Fragment>
-        <br /><p>Loading...</p>
+        <br />
+        <Loading />
       </React.Fragment>
     
   }
