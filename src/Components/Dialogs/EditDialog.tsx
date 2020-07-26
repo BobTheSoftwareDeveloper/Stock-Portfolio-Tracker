@@ -41,7 +41,6 @@ const EditDialog = ({ portfolioId, quantity, stockId, accountId, count, setCount
   }
 
   const handleEditData = () => {
-    console.log("portfolio id", portfolioId)
     axios
       .put(
         "https://stockportfoliotrackerapi.azurewebsites.net/api/portfolio/" + portfolioId.toString(),
@@ -53,13 +52,9 @@ const EditDialog = ({ portfolioId, quantity, stockId, accountId, count, setCount
         }
       )
       .then((res) => {
-        console.log("res", res)
-        console.log("set count", count + 1)
+        alert("Successfully edited!")
         setCount(count + 1)
         setOpenEdit(false)
-        return (
-          <Alert severity="success">Successfully updated!</Alert>
-        )
       })
       .catch((r) => console.log(r.response))
   }

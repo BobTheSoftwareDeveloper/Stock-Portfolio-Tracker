@@ -68,11 +68,10 @@ const StockPage = () => {
         stockName: cStockName
       })
       .then((res) => {
-        console.log("res", res)
         if (res.status === 201) {
-          alert("added stock successfully")
+          alert("New stock added!")
         } else {
-          alert("failed")
+          alert("Failed!")
         }
         setCount(count + 1)
       })

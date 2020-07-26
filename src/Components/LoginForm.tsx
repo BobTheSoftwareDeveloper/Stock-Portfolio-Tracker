@@ -1,5 +1,7 @@
 import React from 'react'
-import { Typography, TextField, FormControlLabel, Button, Checkbox, Container, CssBaseline, withStyles, createStyles, createMuiTheme } from '@material-ui/core'
+import { Typography, TextField, FormControlLabel, Button, 
+  Checkbox, Container, CssBaseline, withStyles, 
+  createStyles, createMuiTheme, CircularProgress, Backdrop } from '@material-ui/core'
 import PortfolioPage from './PortfolioPage';
 
 const theme = createMuiTheme();
@@ -22,7 +24,8 @@ const style = createStyles({
 
 interface IState {
   username: string,
-  password: string
+  password: string,
+  open: boolean,
 }
 
 class LoginForm extends React.Component<any, IState> {
@@ -30,12 +33,19 @@ class LoginForm extends React.Component<any, IState> {
     super(props)
     this.state = ({
       username: "",
-      password: ""
+      password: "",
+      open: false
     })
   }
 
   render () {
     const { classes } = this.props
+
+    const handleBackdropToggle = () => {
+      this.setState({
+        open: !this.state.open
+      })
+    }
 
     const handleTextChange = (event: any) => {
       switch (event.target.id) {
@@ -61,6 +71,7 @@ class LoginForm extends React.Component<any, IState> {
     }
 
     function login(username: string, password: string) {
+      handleBackdropToggle()
       const body = {
         username: username,
         password: password
@@ -78,14 +89,15 @@ class LoginForm extends React.Component<any, IState> {
         .then(response => response.json())
         .then(data => {
           if (data[0] === -1) {
-            console.log("login failed")
+            handleBackdropToggle()
+            alert("Incorrect login details!")
           } else {
-            console.log("login success")
             localStorage.setItem("authenticated", "true")
             localStorage.setItem("portfolioList", data)
             localStorage.setItem("username", username) // need to remove until I figure out another way around this
             localStorage.setItem("password", password) // need to remove until I figure out another way around this
-            alert("login successful")
+            handleBackdropToggle()
+            alert("Login successful!")
             window.location.reload(false)
           }
         })
@@ -93,6 +105,12 @@ class LoginForm extends React.Component<any, IState> {
 
     return ( 
       <React.Fragment>
+        <Backdrop 
+          open={this.state.open} 
+          style={{zIndex: theme.zIndex.drawer + 1, color: '#fff'}}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Container component="main" maxWidth="xs">
           <CssBaseline />
           <div className={classes.paper}>

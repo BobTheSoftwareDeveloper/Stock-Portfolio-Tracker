@@ -112,10 +112,7 @@ const HomePage = () => {
     const portfolioList = localStorage.getItem("portfolioList")?.split(",")
     var total: number = 0
     
-    console.log("portfolio arr", portfolioArray)
-    console.log("stock arr", stockArray)
     portfolioList?.forEach((currentValue: string) => {
-      console.log("logging", currentValue)
       if (currentValue === "") {
         return 
       }
@@ -133,8 +130,6 @@ const HomePage = () => {
       }
     })
 
-    console.log("stock data", stockData)
-    console.log("total", total)
     stockData.forEach((value: number, key: string) => {
       const percentage: number = Number(Number((value / total) * 100).toFixed(2))
       dataP.push({

@@ -88,6 +88,7 @@ const PortfolioPage = () => {
       })
       .then((res) => {
         if (res.status === 201) {
+          alert("New portfolio added!")
           setCheck(false)
           setCount(count + 1)
         } else {
@@ -160,11 +161,9 @@ const PortfolioPage = () => {
   }, [count])
 
   var items: any = "";
-  console.log("check outside", check)
 
   // Check all objects are initialized
   if (Object.keys(stockArray).length !== 0 && Object.keys(portfolioArray).length !== 0 && check) {
-    console.log("check inside", check)
     // Objects initialized
     const userPortfolio = portfolioList?.split(",")
     var rows: JSX.Element[] = [];
@@ -193,12 +192,15 @@ const PortfolioPage = () => {
                 count={count}
                 setCount={setCount}
               />
-              <DeleteDialog 
-                source={"portfolio"} 
-                id={portId} 
-                count={count} 
-                setCount={setCount} 
-              />
+              {Object.keys(portfolioArray).length <= 1 
+                ? <React.Fragment></React.Fragment>
+                : <DeleteDialog 
+                    source={"portfolio"} 
+                    id={portId} 
+                    count={count} 
+                    setCount={setCount} 
+                  />
+              }
             </TableCell>
           </TableRow>
       )

@@ -26,9 +26,9 @@ const DeleteDialog = ({ source, id, count, setCount }: Items) => {
       .delete("https://stockportfoliotrackerapi.azurewebsites.net/api/" + source + "/" + id)
       .then((res) => {
         if (res.status === 200) {
-          alert("successfully deleted")
+          alert("Successfully deleted!")
         } else {
-          alert("failed to delete")
+          alert("Failed to delete!")
         }
         setCount(count + 1)
       })
