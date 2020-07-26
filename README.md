@@ -7,7 +7,7 @@ Here is a link to my deployed [React project](https://stockportfoliotracker.azur
 - Password: MSA2020isCool! (case sensitive)
 #### Features:
 - Uses React with Typescript
-- Connects to my own [API]([https://github.com/BobTheSoftwareDeveloper/StockPortfolioAPI/](https://github.com/BobTheSoftwareDeveloper/StockPortfolioAPI/)) created with ASP .NET Core
+- Connects to my own [API](https://github.com/BobTheSoftwareDeveloper/StockPortfolioAPI/) created with ASP .NET Core
 - Utilises CRUD operations through the API
 - Uses Material-UI, axios, canvasjs, and react-spinners
 - Sign-in verification through the use of REST API
