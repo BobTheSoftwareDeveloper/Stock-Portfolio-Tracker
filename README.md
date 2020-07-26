@@ -22,6 +22,8 @@ If any MSPs reading this has experience with setting up a login/sign-up environm
 ### DevOps:
 [Deployed website](https://stockportfoliotracker.azurewebsites.net/)
 
+[Azure pipelines](https://dev.azure.com/stock-portfolio-tracker/Stock%20Portfolio%20Tracker) (Private. Have invited the two users in the submission requirement)
+
 #### Description:
 - The build pipeline uses npm run build to create a production version of the React website. It triggers when commits are made to the master and develop branch. By committing to the develop branch, it allows me to check if there are any errors in the building process before making a pull request to the master branch. 
 - The release pipeline deploys the built files to my Azure website. It triggers when commits are made to the master branch. When I confirm that a commit in the develop branch is working as intended without any errors, then I can make a pull request to the master branch which will trigger the build pipeline and then the release pipeline and deploy the new changes onto the Azure website. 
