@@ -1,11 +1,17 @@
 import React from 'react'
-import { Typography, TextField, FormControlLabel, Button, 
-  Checkbox, Container, CssBaseline, withStyles, 
-  createStyles, createMuiTheme, CircularProgress, Backdrop } from '@material-ui/core'
+import {
+  Typography, TextField, FormControlLabel, Button,
+  Checkbox, Container, CssBaseline, withStyles,
+  createStyles, createMuiTheme, CircularProgress, Backdrop
+} from '@material-ui/core'
 import PortfolioPage from './PortfolioPage';
+import SignUpForm from './SignUpForm'
+import { useCookies } from 'react-cookie'
+import { makeStyles } from '@material-ui/core/styles';
+import axios from 'axios'
 
 const theme = createMuiTheme();
-const style = createStyles({
+const style = makeStyles({
   paper: {
     marginTop: theme.spacing(8),
     marginBottom: theme.spacing(8),
@@ -26,139 +32,140 @@ interface IState {
   username: string,
   password: string,
   open: boolean,
+  signUpOpen: boolean
 }
 
-class LoginForm extends React.Component<any, IState> {
-  constructor(props: any) {
-    super(props)
-    this.state = ({
-      username: "",
-      password: "",
-      open: false
-    })
+const LoginForm = () => {
+  const [username, setUsername] = React.useState<string>("")
+  const [password, setPassword] = React.useState<string>("")
+  const [open, setOpen] = React.useState<boolean>(false)
+  const [signUpOpen, setSignUpOpen] = React.useState<boolean>(false)
+  const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
+  const classes = style()
+
+  const handleBackdropToggle = () => {
+    setOpen(!open)
   }
 
-  render () {
-    const { classes } = this.props
+  const handleTextChange = (event: any) => {
+    switch (event.target.id) {
+      case 'username':
+        setUsername(event.target.value)
+        break;
+      case 'password':
+        setPassword(event.target.value)
+        break;
+      default:
+        console.log("Error: Unable to handle text change.")
+    }
+  }
 
-    const handleBackdropToggle = () => {
-      this.setState({
-        open: !this.state.open
+  const signUp = () => {
+    setSignUpOpen(true)
+  }
+
+  const closeSignUp = () => {
+    setSignUpOpen(false)
+  }
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      login(username, password)
+    }
+  }
+
+  const login = (username: string, password: string) => {
+    handleBackdropToggle()
+    const body = {
+      username: username,
+      password: password
+    }
+
+    const loginUrl = process.env.REACT_APP_BACKEND_URL + "api/login"
+    axios.post(loginUrl, body)
+      .then(response => {
+        console.log(response)
+        const session_id = response.data.session_id
+        const expire = new Date(Date.parse(response.data.expire))
+        setCookie("SESSION_ID", session_id, { path: '/', expires: expire})
+        window.location.reload(true)
       })
-    }
-
-    const handleTextChange = (event: any) => {
-      switch (event.target.id) {
-        case 'username':
-          this.setState({
-            username: event.target.value
-          })
-          break;
-        case 'password':
-          this.setState({
-            password: event.target.value
-          })
-          break;
-        default:
-          console.log("Error: Unable to handle text change.")
-      }
-    }
-
-    const handleKeyDown = (event: any) => {
-      if (event.key === 'Enter') {
-        login(this.state.username, this.state.password)
-      }
-    }
-
-    function login(username: string, password: string) {
-      handleBackdropToggle()
-      const body = {
-        username: username,
-        password: password
-      }
-
-      const loginUrl = "https://stockportfoliotrackerapi.azurewebsites.net/api/login"
-      fetch(loginUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'text/json'
-        },
-        body: JSON.stringify(body)
+      .catch(err => {
+        alert("Invalid login details")
+        setSignUpOpen(false)
       })
-        .then(response => response.json())
-        .then(data => {
-          if (data[0] === -1) {
-            handleBackdropToggle()
-            alert("Incorrect login details!")
-          } else {
-            localStorage.setItem("authenticated", "true")
-            localStorage.setItem("portfolioList", data)
-            localStorage.setItem("username", username) // need to remove until I figure out another way around this
-            localStorage.setItem("password", password) // need to remove until I figure out another way around this
-            handleBackdropToggle()
-            alert("Login successful!")
-            window.location.reload(false)
-          }
-        })
-    }
+  }
 
-    return ( 
-      <React.Fragment>
-        <Backdrop 
-          open={this.state.open} 
-          style={{zIndex: theme.zIndex.drawer + 1, color: '#fff'}}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-        <Container component="main" maxWidth="xs">
-          <CssBaseline />
-          <div className={classes.paper}>
-            <Typography component="h1" variant="h5">
-              Sign in
+  return (
+    <React.Fragment>
+      <Backdrop
+        open={open}
+        style={{ zIndex: theme.zIndex.drawer + 1, color: '#fff' }}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <Backdrop
+        open={signUpOpen}
+        style={{ zIndex: theme.zIndex.drawer + 1, color: '#fff' }}
+      >
+        <SignUpForm closeSignUp={closeSignUp} />
+      </Backdrop>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Typography component="h1" variant="h5">
+            Sign in
             </Typography>
-            <form className={classes.form} noValidate>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="username"
-                label="Username"
-                name="username"
-                autoComplete="username"
-                autoFocus
-                onChange={handleTextChange}
-                onKeyDown={handleKeyDown}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={handleTextChange}
-                onKeyDown={handleKeyDown}
-              />
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                onClick={() => login(this.state.username, this.state.password)}
-              >
-                Sign In
+          <form className={classes.form} noValidate>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              autoFocus
+              onChange={handleTextChange}
+              onKeyDown={handleKeyDown}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              onChange={handleTextChange}
+              onKeyDown={handleKeyDown}
+            />
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={() => login(username, password)}
+            >
+              Sign In
               </Button>
-            </form>
-          </div>
-        </Container>
-      </React.Fragment>
-    )
-  }
+            <Button
+              fullWidth
+              variant="contained"
+              color="secondary"
+              style={{ marginTop: 30 }}
+              onClick={signUp}
+            >
+              Sign Up
+              </Button>
+          </form>
+        </div>
+      </Container>
+    </React.Fragment>
+  )
 }
 
-export default withStyles(style)(LoginForm)
+export default LoginForm

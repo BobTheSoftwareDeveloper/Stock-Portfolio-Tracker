@@ -1,26 +1,31 @@
 import React from 'react'
 import { Paper, Tabs, Tab } from '@material-ui/core'
 
-
-export default class extends React.Component<any, any> {  
-  render() {
-    return (
-      <div style={{ position: "fixed", bottom: 0, width: "100%" }}>
-        <Paper style={{ flexGrow: 1 }}>
-          <Tabs
-            value={this.props.tab}
-            onChange={this.props.changeTab}
-            indicatorColor="primary"
-            textColor="primary"
-            centered
-            scrollButtons="auto"
-          >
-            <Tab label="Home Page" />
-            <Tab label="Portfolio" />
-            <Tab label="Stock" />
-          </Tabs>
-        </Paper>
-      </div>
-    )
-  }
+interface IFooter {
+  tab: number,
+  setTab: any
 }
+
+const Footer = (props: IFooter) => {
+  return (
+    <div style={{ position: "fixed", bottom: 0, width: "100%" }}>
+      <Paper style={{ flexGrow: 1 }}>
+        <Tabs
+          value={props.tab}
+          onChange={props.setTab}
+          indicatorColor="primary"
+          textColor="primary"
+          centered
+          scrollButtons="auto"
+        >
+          <Tab label="Home" />
+          <Tab label="Portfolio" />
+          <Tab label="Stock" />
+          <Tab label="Settings" />
+        </Tabs>
+      </Paper>
+    </div>
+  )
+}
+
+export default Footer

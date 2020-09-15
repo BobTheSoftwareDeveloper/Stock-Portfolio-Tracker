@@ -1,17 +1,17 @@
 import React from 'react'
 import { Typography, createMuiTheme, Table, Container, Button, Dialog, DialogTitle, DialogContent, DialogContentText,
 Select, TextField, TableContainer, TableHead, TableBody, TableRow, TableCell, DialogActions, Paper, MenuItem } from '@material-ui/core'
-import { GetStock } from './Utilities/GetStock'
 import DeleteDialog from './Dialogs/DeleteDialog'
 import { makeStyles } from '@material-ui/core/styles'
 import axios from 'axios'
 import Loading from './Loading'
+import { useCookies } from 'react-cookie'
 
 interface StockData {
   [index: number]: {
-    stockId: number,
-    stockName: string,
-    stockTicker: string
+    id: number,
+    name: string,
+    ticker: string
   }
 }
 
@@ -21,13 +21,13 @@ const useStyles = makeStyles({
     // minWidth: 650,
   },
   container: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(10),
     width: "97%",
     textAlign: "center",
     marginBottom: theme.spacing(10),
     marginLeft: "auto",
     marginRight: "auto",
-    maxWidth: 800
+    maxWidth: 800,
   }
 });
 
@@ -37,47 +37,24 @@ const StockPage = () => {
   const [openAdd, setOpenAdd] = React.useState<boolean>(false)
   const [cStockCode, setCStockCode] = React.useState<string>("")
   const [cStockName, setCStockName] = React.useState<string>("")
+  const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
 
   const classes = useStyles()
 
   React.useEffect(() => {
-    GetStock().then(res => { setStockArray(res) })
+    axios.get(process.env.REACT_APP_BACKEND_URL + "api/get-stock", {
+      params: {
+        session_id: cookies["SESSION_ID"]
+      }
+    })
+      .then(response => {
+        console.log("Data:", response.data)
+        setStockArray(response.data)
+      })
+      .catch(err => {
+        alert("Error: " + err)
+      })
   }, [count])
-
-  const handleClickOpen = () => {
-    setOpenAdd(true)
-  }
-
-  const handleClickClose = () => {
-    setOpenAdd(false)
-  }
-
-  const handleStockCode = (event: any) => {
-    setCStockCode(event.target.value)
-  }
-
-  const handleStockName = (event: any) => {
-    setCStockName(event.target.value)
-  }
-
-  const handleStockAdd = () => {
-    axios
-      .post("https://stockportfoliotrackerapi.azurewebsites.net/api/stock",
-      {
-        stockTicker: cStockCode,
-        stockName: cStockName
-      })
-      .then((res) => {
-        if (res.status === 201) {
-          alert("New stock added!")
-        } else {
-          alert("Failed!")
-        }
-        setCount(count + 1)
-      })
-      .catch((err) => {console.log(err.response)})
-      setOpenAdd(false)
-  }
 
   var items: any = "";
 
@@ -96,48 +73,15 @@ const StockPage = () => {
       rows.push(
           <TableRow key={currentValue} hover={true}>
             <TableCell component="th" scope="row">
-              {stockArray[index].stockTicker}
+              {stockArray[index].ticker}
             </TableCell>
-            <TableCell align="right">{stockArray[index].stockName}</TableCell>
+            <TableCell align="right">{stockArray[index].name}</TableCell>
           </TableRow>
       )
     })
 
     items = 
     <React.Fragment>
-      <Container>
-        <Button onClick={handleClickOpen} variant="contained" color="primary" style={{marginTop: theme.spacing(3), marginBottom: theme.spacing(3)}}>Add new stock</Button>
-      </Container>
-      <Dialog open={openAdd} onClose={handleClickClose} maxWidth="xs">
-        <DialogTitle id="form-dialog-title">Add stock</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Please fill in the details below. 
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="stockCode"
-            label="Stock Code"
-            value={cStockCode}
-            onChange={handleStockCode}
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            id="stockName"
-            label="Stock Name"
-            value={cStockName}
-            onChange={handleStockName}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleStockAdd} color="primary">
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
       <TableContainer component={Paper} className={classes.container}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead style={{ backgroundColor: "rgb(159 164 169 / 53%)" }}>
@@ -164,7 +108,7 @@ const StockPage = () => {
   return (
     <React.Fragment>
       <Typography component="h1" variant="h5" style={{ marginTop: theme.spacing(2), fontWeight: 600 }}>
-        My Stock
+        All Stocks
       </Typography>
       {items}
     </React.Fragment>

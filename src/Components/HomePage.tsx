@@ -3,6 +3,7 @@ import { Typography, createMuiTheme } from '@material-ui/core'
 import CanvasJSReact from '../assests/canvasjs.react'
 import axios from 'axios'
 import Loading from './Loading'
+import { useCookies } from 'react-cookie'
 
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
@@ -27,29 +28,30 @@ const HomePage = () => {
   const [portfolioArray, setPortfolioArray] = React.useState<IStatePortfolio>({})
   const [stockArray, setStockArray] = React.useState<IStateStock>({})
   const [check, setCheck] = React.useState<boolean>(false)
+  const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
 
   React.useEffect(() => {
+    const url: string = process.env.REACT_APP_BACKEND_URL + "api/check-session"
     axios
-      .post("https://stockportfoliotrackerapi.azurewebsites.net/api/login", {
-        username: localStorage.getItem("username"),
-        password: localStorage.getItem("password")
+      .post(url, {
+        session_id: cookies["SESSION_ID"]
       })
       .then((res) => {
-        var list = ""
-        Object.keys(res.data).map((currentValue) => {
-          const key = Number(currentValue)
-          list += res.data[key] + ","
-        })
-        localStorage.setItem("portfolioList", list)
-        setCheck(true)
+        // valid
+        return true
       })
-      .catch((error) => {console.log(error.response)})
+      .catch((error) => {
+        // invalid
+        removeCookie("SESSION_ID")
+        window.location.href = "/"
+        return false
+      })
   }, [])
 
   React.useEffect(() => {
     var newObj = {}
     axios
-      .get("https://stockportfoliotrackerapi.azurewebsites.net/api/portfolio")
+      .get(process.env.REACT_APP_BACKEND_URL + "api/portfolio")
       .then(res => {
         Object.keys(res.data).map((currentValue: string, index: number) => {
           newObj = {
@@ -87,9 +89,9 @@ const HomePage = () => {
   var items: any = "";
 
   if (Object.keys(portfolioArray).length !== 0 && Object.keys(stockArray).length !== 0 && check) {
-    
+
     // data options for the graph
-    var dataP: {y: number, label: string}[] = []
+    var dataP: { y: number, label: string }[] = []
 
     var options = {
       animationEnabled: true,
@@ -111,10 +113,10 @@ const HomePage = () => {
     var stockData: any = new Map()
     const portfolioList = localStorage.getItem("portfolioList")?.split(",")
     var total: number = 0
-    
+
     portfolioList?.forEach((currentValue: string) => {
       if (currentValue === "") {
-        return 
+        return
       }
 
       const currentNumber: number = Number(currentValue)
@@ -138,19 +140,19 @@ const HomePage = () => {
       })
     })
 
-    items = 
-      <div style={{marginTop: 30, marginBottom: theme.spacing(10)}}>
+    items =
+      <div style={{ marginTop: 30, marginBottom: theme.spacing(10) }}>
         <CanvasJSChart options={options} />
       </div>
   } else {
-    items = 
+    items =
       <React.Fragment>
         {/* <br /><p>Loading...</p> */}
         <br />
         <Loading />
       </React.Fragment>
   }
-  
+
   return (
     <React.Fragment>
       <Typography component="h1" variant="h5" style={{ marginTop: theme.spacing(2), fontWeight: 600 }}>

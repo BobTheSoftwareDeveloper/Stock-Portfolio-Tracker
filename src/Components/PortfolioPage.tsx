@@ -5,7 +5,6 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody,
 Dialog, DialogTitle, DialogContentText, DialogContent, TextField, DialogActions, Select, MenuItem } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import EditDialog from './Dialogs/EditDialog'
-import { GetStock } from './Utilities/GetStock'
 import { Delete } from '@material-ui/icons'
 import DeleteDialog from './Dialogs/DeleteDialog'
 import Loading from './Loading'
@@ -101,7 +100,7 @@ const PortfolioPage = () => {
   }
 
   React.useEffect(() => {
-    GetStock().then(res => { setStockData(res) })
+    // TODO
   }, [])
 
   React.useEffect(() => {

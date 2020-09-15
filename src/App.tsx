@@ -6,6 +6,8 @@ import LoginForm from './Components/LoginForm'
 import PortfolioPage from './Components/PortfolioPage'
 import StockPage from './Components/StockPage'
 import HomePage from './Components/HomePage'
+import Settings from './Components/Settings'
+import { useCookies } from 'react-cookie'
 
 interface IState {
   authenticated: boolean,
@@ -15,99 +17,75 @@ interface IState {
   portfolio: [{}]
 }
 
-class App extends React.Component<{}, IState> {
-  constructor(props: any) {
-    super(props)
-    this.state = ({
-      authenticated: localStorage.getItem("authenticated") === "true" ? true : false,
-      tab: localStorage.getItem("tab") !== null ? Number(localStorage.getItem("tab")) : 0,
-      currentView: "Default text",
-      portfolioList: localStorage.getItem("portfolioList") !== "" ? localStorage.getItem("portfolioList")?.toString() : "",
-      portfolio: [{}]
-    })
-  }
+const App = () => {
+  const [tab, setTab] = React.useState<number>(localStorage.getItem("tab") !== null ? Number(localStorage.getItem("tab")) : 0)
+  const [currentView, setCurrentView] = React.useState<any>("")
+  const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
+  const [authenticated, setAuthenticated] = React.useState(false)
 
-  componentDidMount() {
+  React.useEffect(() => {
     const newValue = localStorage.getItem("tab") !== null ? Number(localStorage.getItem("tab")) : 0
-    if (this.state.authenticated) {
+    if (cookies["SESSION_ID"] !== undefined) {
       switch (newValue) {
         case 0:
-          this.setState({
-            currentView: <HomePage />
-          })
+          setCurrentView(<HomePage />)
           break;
         case 1:
-          this.setState({
-            currentView: <PortfolioPage />
-          })
+          setCurrentView(<PortfolioPage />)
           break;
         case 2:
-          this.setState({
-            currentView: <StockPage />
-          })
+          setCurrentView(<StockPage />)
+          break;
+        case 3:
+          setCurrentView(<Settings />)
           break;
       }
     }
-  }
+  }, [])
 
-  render() {
-    const portfolio = this.state.portfolio
+  const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
+    console.log("NNew tab:" + newValue)
 
-    const updatePortfolio = (portfolio: [{}]) => {
-      this.setState({
-        portfolio: portfolio
-      })
-    }
+    localStorage.setItem("tab", newValue.toString())
 
-    const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
-      this.setState({
-        tab: newValue
-      })
-
-      localStorage.setItem("tab", newValue.toString())
-
-      if (this.state.authenticated) {
-        switch (newValue) {
-          case 0:
-            this.setState({
-              currentView: <HomePage />
-            })
-            break;
-          case 1:
-            this.setState({
-              currentView: <PortfolioPage />
-            })
-            break;
-          case 2:
-            this.setState({
-              currentView: <StockPage />
-            })
-            break;
-        }
+    if (cookies["SESSION_ID"] !== undefined) {
+      switch (newValue) {
+        case 0:
+          setCurrentView(<HomePage />)
+          break;
+        case 1:
+          setCurrentView(<PortfolioPage />)
+          break;
+        case 2:
+          setCurrentView(<StockPage />)
+          break;
+        case 3:
+          setCurrentView(<Settings />)
+          break
       }
     }
     
+    setTab(newValue)
+  }
 
-    if (this.state.authenticated) {
-      // login successful
-      return (
-        <div className="App">
-          <Header />
-          {this.state.currentView}
-          <Footer tab={this.state.tab} changeTab={changeTab} />
-        </div>
-      )
-    } else {
-      // need to login
-      return (
-        <div className="App">
-          <Header />
-          <LoginForm portfolio={this.state.portfolioList} />
-          <Footer tab={this.state.tab} changeTab={changeTab} />
-        </div>
-      );
-    }
+  if (cookies["SESSION_ID"] !== undefined) {
+    // login successful
+    return (
+      <div className="App">
+        <Header />
+        {currentView}
+        <Footer tab={tab} setTab={changeTab} />
+      </div>
+    )
+  } else {
+    // need to login
+    return (
+      <div className="App">
+        <Header />
+        <LoginForm />
+        <Footer tab={tab} setTab={changeTab} />
+      </div>
+    );
   }
 }
-
 export default App;

@@ -2,7 +2,6 @@ import React from 'react'
 import { IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, Button, DialogActions, Select, MenuItem, Typography } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import { Delete, Edit } from '@material-ui/icons'
-import { GetStock } from '../Utilities/GetStock'
 import axios from 'axios'
 
 interface Edit {
@@ -64,7 +63,7 @@ const EditDialog = ({ portfolioId, quantity, stockId, accountId, count, setCount
   ]
 
   React.useEffect(() => {
-    GetStock().then(res => { setStockData(res) })
+    // TODO
   }, [])
 
   return (

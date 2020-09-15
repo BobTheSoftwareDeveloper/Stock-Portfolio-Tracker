@@ -2,6 +2,7 @@ import React from 'react'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { AppBar, Toolbar, IconButton, Typography, Button } from '@material-ui/core'
 import { Menu } from '@material-ui/icons'
+import { useCookies } from 'react-cookie'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -16,15 +17,17 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function Header() {
+
+  const classes = useStyles();
+  const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
+
   function handleButtonClick() {
-    const authenticated = localStorage.getItem("authenticated")
-    if (authenticated === "true") {
-      localStorage.clear()
+    const session_id = cookies["SESSION_ID"]
+    if (session_id !== undefined) {
+      removeCookie("SESSION_ID")
       window.location.reload(false);
     }
   }
-
-  const classes = useStyles();
 
   return (
     <div className={classes.root}>
@@ -34,7 +37,7 @@ export default function Header() {
             Stock Portfolio Tracker
           </Typography>
           <Button color="inherit" onClick={handleButtonClick}>
-            {localStorage.getItem("authenticated") === "true" ? "Logout" : "Login"}
+            {cookies["SESSION_ID"] !== undefined ? "Logout" : "Login"}
           </Button>
         </Toolbar>
       </AppBar>
