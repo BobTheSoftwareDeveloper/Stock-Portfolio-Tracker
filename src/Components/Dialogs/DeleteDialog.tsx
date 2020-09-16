@@ -2,15 +2,17 @@ import React from 'react'
 import { IconButton, Dialog, DialogTitle, DialogActions, Button, Typography } from '@material-ui/core'
 import { Delete } from '@material-ui/icons'
 import axios from 'axios'
+import PortfolioAPI from '../Utilities/PortfolioAPI'
 
 interface Items {
+  sessionId: string,
   source: string,
   id: number,
   count: number,
   setCount: any
 }
 
-const DeleteDialog = ({ source, id, count, setCount }: Items) => {
+const DeleteDialog = ({ sessionId, source, id, count, setCount }: Items) => {
   const [open, setOpen] = React.useState<boolean>(false)
 
   const handleClose = () => {
@@ -22,17 +24,14 @@ const DeleteDialog = ({ source, id, count, setCount }: Items) => {
   }
 
   const deleteItem = () => {
-    axios
-      .delete("https://stockportfoliotrackerapi.azurewebsites.net/api/" + source + "/" + id)
-      .then((res) => {
-        if (res.status === 200) {
-          alert("Successfully deleted!")
-        } else {
-          alert("Failed to delete!")
-        }
+    PortfolioAPI.remove(sessionId, id)
+      .then(response => {
+        alert("Successfully deleted!")
         setCount(count + 1)
       })
-      .catch((err) => {console.log(err.response)})
+      .catch(err => {
+        alert("Error: " + err)
+      })
   }
 
   return (

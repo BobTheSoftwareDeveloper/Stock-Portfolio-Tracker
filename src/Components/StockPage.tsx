@@ -3,9 +3,9 @@ import { Typography, createMuiTheme, Table, Container, Button, Dialog, DialogTit
 Select, TextField, TableContainer, TableHead, TableBody, TableRow, TableCell, DialogActions, Paper, MenuItem } from '@material-ui/core'
 import DeleteDialog from './Dialogs/DeleteDialog'
 import { makeStyles } from '@material-ui/core/styles'
-import axios from 'axios'
 import Loading from './Loading'
 import { useCookies } from 'react-cookie'
+import StockAPI from './Utilities/StockAPI'
 
 interface StockData {
   [index: number]: {
@@ -42,14 +42,9 @@ const StockPage = () => {
   const classes = useStyles()
 
   React.useEffect(() => {
-    axios.get(process.env.REACT_APP_BACKEND_URL + "api/get-stock", {
-      params: {
-        session_id: cookies["SESSION_ID"]
-      }
-    })
-      .then(response => {
-        console.log("Data:", response.data)
-        setStockArray(response.data)
+    StockAPI.get(cookies["SESSION_ID"])
+      .then(data => {
+        setStockArray(data)
       })
       .catch(err => {
         alert("Error: " + err)

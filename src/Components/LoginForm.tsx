@@ -38,6 +38,7 @@ interface IState {
 const LoginForm = () => {
   const [username, setUsername] = React.useState<string>("")
   const [password, setPassword] = React.useState<string>("")
+  const [totp, setTotp] = React.useState<string>("")
   const [open, setOpen] = React.useState<boolean>(false)
   const [signUpOpen, setSignUpOpen] = React.useState<boolean>(false)
   const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
@@ -51,10 +52,13 @@ const LoginForm = () => {
     switch (event.target.id) {
       case 'username':
         setUsername(event.target.value)
-        break;
+        break
       case 'password':
         setPassword(event.target.value)
-        break;
+        break
+      case 'totp':
+        setTotp(event.target.value)
+        break
       default:
         console.log("Error: Unable to handle text change.")
     }
@@ -70,28 +74,36 @@ const LoginForm = () => {
 
   const handleKeyDown = (event: any) => {
     if (event.key === 'Enter') {
-      login(username, password)
+      login(username, password, totp)
     }
   }
 
-  const login = (username: string, password: string) => {
+  const login = (username: string, password: string, totp: string) => {
     handleBackdropToggle()
     const body = {
       username: username,
-      password: password
+      password: password,
+      totp: totp.replace(" ", "")
     }
 
     const loginUrl = process.env.REACT_APP_BACKEND_URL + "api/login"
     axios.post(loginUrl, body)
       .then(response => {
         console.log(response)
-        const session_id = response.data.session_id
-        const expire = new Date(Date.parse(response.data.expire))
-        setCookie("SESSION_ID", session_id, { path: '/', expires: expire})
-        window.location.reload(true)
+
+        if (response.data === "verify totp") {
+          alert("need to verify")
+          setOpen(false)
+        } else {
+          const session_id = response.data.session_id
+          const expire = new Date(Date.parse(response.data.expire))
+          setCookie("SESSION_ID", session_id, { path: '/', expires: expire})
+          window.location.reload(true)
+        }
       })
       .catch(err => {
         alert("Invalid login details")
+        setOpen(false)
         setSignUpOpen(false)
       })
   }
@@ -143,12 +155,22 @@ const LoginForm = () => {
               onChange={handleTextChange}
               onKeyDown={handleKeyDown}
             />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              name="totp"
+              label="TOTP Code"
+              id="totp"
+              onChange={handleTextChange}
+              onKeyDown={handleKeyDown}
+            />
             <Button
               fullWidth
               variant="contained"
               color="primary"
               className={classes.submit}
-              onClick={() => login(username, password)}
+              onClick={() => login(username, password, totp)}
             >
               Sign In
               </Button>

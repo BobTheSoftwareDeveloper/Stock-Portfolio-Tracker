@@ -3,28 +3,22 @@ import { IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, Text
 import { Alert } from '@material-ui/lab'
 import { Delete, Edit } from '@material-ui/icons'
 import axios from 'axios'
+import PortfolioAPI from '../Utilities/PortfolioAPI'
 
 interface Edit {
+  sessionId: string,
   portfolioId: number,
   quantity: number,
-  stockId: number,
-  accountId: number,
+  stockId: string,
   count: number,
-  setCount: any
+  setCount: any,
+  currentStockData: any
 }
 
-interface StockData {
-  [index: number]: {
-    stockId: number,
-    stockName: string,
-    stockTicker: string
-  }
-}
-
-const EditDialog = ({ portfolioId, quantity, stockId, accountId, count, setCount }: Edit) => {
+const EditDialog = ({ sessionId, portfolioId, quantity, stockId, count, setCount, currentStockData }: Edit) => {
   const [openEdit, setOpenEdit] = React.useState<boolean>(false)
-  const [stockData, setStockData] = React.useState<StockData>({})
-  const [currentStockId, setCurrentStockId] = React.useState<number>(stockId)
+  const [stockData, setStockData] = React.useState<any>(currentStockData)
+  const [currentStockId, setCurrentStockId] = React.useState<string>(stockId)
   const [currentQuantity, setCurrentQuantity] = React.useState<number>(quantity)
 
   const handleOpen = () => {
@@ -40,22 +34,15 @@ const EditDialog = ({ portfolioId, quantity, stockId, accountId, count, setCount
   }
 
   const handleEditData = () => {
-    axios
-      .put(
-        "https://stockportfoliotrackerapi.azurewebsites.net/api/portfolio/" + portfolioId.toString(),
-        {
-          portfolioId: portfolioId,
-          quantity: Number(currentQuantity),
-          stockId: currentStockId,
-          accountId: accountId
-        }
-      )
-      .then((res) => {
+    PortfolioAPI.update(sessionId, portfolioId, currentQuantity, currentStockId)
+      .then(response => {
         alert("Successfully edited!")
         setCount(count + 1)
         setOpenEdit(false)
       })
-      .catch((r) => console.log(r.response))
+      .catch(err => {
+        alert("Error: " + err)
+      })
   }
 
   const handleQuantityChange = (event: any) => [
@@ -84,10 +71,10 @@ const EditDialog = ({ portfolioId, quantity, stockId, accountId, count, setCount
             onChange={handleSelect}
             fullWidth
           >
-            {Object.keys(stockData).map((currentValue: string) => {
+            {stockData.map((currentValue: any) => {
               const index: number = Number(currentValue)
               return (
-                <MenuItem value={stockData[index].stockId} key={stockData[index].stockId}>{stockData[index].stockTicker}{" ("}{stockData[index].stockName}{")"}</MenuItem>
+                <MenuItem value={currentValue.ticker} key={currentValue.id}>{currentValue.ticker}{" ("}{currentValue.name}{")"}</MenuItem>
               )
             })}
           </Select>

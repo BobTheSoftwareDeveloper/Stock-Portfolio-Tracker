@@ -1,27 +1,22 @@
-import React from 'react'
 import axios from 'axios'
 import { useCookies } from 'react-cookie'
 
-const CheckLogin = () => {
-
-  const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
-
+const CheckLogin = (session_id: string) => new Promise((resolve, reject) : any => {
   const url: string = process.env.REACT_APP_BACKEND_URL + "api/check-session"
   axios
     .post(url, {
-      session_id: cookies["SESSION_ID"]
+      session_id: session_id
     })
     .then((res) => {
       // valid
-      return true
+      resolve(true)
     })
     .catch((error) => {
       // invalid
-      removeCookie("SESSION_ID")
-      window.location.href = "/"
-      return false
+      alert("Session invalid. Please login again.")
+      reject(false)
     })
 
-}
+})
 
-export default CheckLogin
+export default { CheckLogin }
