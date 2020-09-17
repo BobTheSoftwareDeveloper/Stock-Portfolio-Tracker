@@ -3,6 +3,7 @@ import { IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, Text
 import { Alert } from '@material-ui/lab'
 import { Delete, Edit } from '@material-ui/icons'
 import axios from 'axios'
+import { Autocomplete } from '@material-ui/lab'
 import PortfolioAPI from '../Utilities/PortfolioAPI'
 
 interface Edit {
@@ -17,7 +18,7 @@ interface Edit {
 const EditDialog = ({ sessionId, portfolioId, quantity, stockId, socket, currentStockData }: Edit) => {
   const [openEdit, setOpenEdit] = React.useState<boolean>(false)
   const [stockData, setStockData] = React.useState<any>(currentStockData)
-  const [currentStockId, setCurrentStockId] = React.useState<string>(stockId)
+  const [currentStockId, setCurrentStockId] = React.useState<string>("")
   const [currentQuantity, setCurrentQuantity] = React.useState<number>(quantity)
 
   const handleOpen = () => {
@@ -28,11 +29,23 @@ const EditDialog = ({ sessionId, portfolioId, quantity, stockId, socket, current
     setOpenEdit(false)
   }
 
-  const handleSelect = (event: any) => {
-    setCurrentStockId(event.target.value)
+  const handleSelect = (event: any, value: any) => {
+    if (value === undefined || value === null) {
+      return 
+    }
+    const code = value.split(" ")[0].trim()
+    setCurrentStockId(code)
   }
 
   const handleEditData = () => {
+    if (currentStockId.trim() === "") {
+      alert("Please enter the stock code")
+      return
+    }
+    if (currentQuantity === 0) {
+      alert("Quantity cannot be zero")
+      return
+    }
     PortfolioAPI.update(sessionId, portfolioId, currentQuantity, currentStockId)
       .then(response => {
         alert("Successfully edited!")
@@ -44,13 +57,9 @@ const EditDialog = ({ sessionId, portfolioId, quantity, stockId, socket, current
       })
   }
 
-  const handleQuantityChange = (event: any) => [
+  const handleQuantityChange = (event: any) => {
     setCurrentQuantity(event.target.value)
-  ]
-
-  React.useEffect(() => {
-    // TODO
-  }, [])
+  }
 
   return (
     <React.Fragment>
@@ -63,20 +72,14 @@ const EditDialog = ({ sessionId, portfolioId, quantity, stockId, socket, current
           <Typography variant="body1">
             Stock Code
           </Typography>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={currentStockId}
+          <Autocomplete
+            options={stockData.map((currentValue: any) => currentValue.ticker + " (" + currentValue.name + ")")}
             onChange={handleSelect}
             fullWidth
-          >
-            {stockData.map((currentValue: any) => {
-              const index: number = Number(currentValue)
-              return (
-                <MenuItem value={currentValue.ticker} key={currentValue.id}>{currentValue.ticker}{" ("}{currentValue.name}{")"}</MenuItem>
-              )
-            })}
-          </Select>
+            renderInput={(params) => (
+              <TextField {...params} label="" fullWidth required />
+            )}
+          />
           <TextField
             autoFocus
             margin="dense"

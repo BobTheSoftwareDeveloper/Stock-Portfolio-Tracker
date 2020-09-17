@@ -160,7 +160,7 @@ const Settings = () => {
       <main className={classes.layout}>
         <Paper className={classes.paper}>
           <Grid container spacing={3} style={{ marginTop: 20 }}>
-            <Grid item xs={12} sm={6}>
+            {/* <Grid item xs={12} sm={6}>
               <Typography variant="body1" align="center" style={{ fontWeight: 600, marginBottom: 20 }}>
                 Change Password:
               </Typography>
@@ -194,8 +194,8 @@ const Settings = () => {
               <Button variant="contained" color="primary" style={{ marginTop: 20 }}>
                 Update Password
               </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} style={{ textAlign: 'center' }}>
+            </Grid> */}
+            <Grid item xs={12} sm={12} style={{ textAlign: 'center' }}>
               <Typography variant="body1" align="center" style={{ fontWeight: 600, marginBottom: 20 }}>
                 Two-Factor Authentication:
               </Typography>

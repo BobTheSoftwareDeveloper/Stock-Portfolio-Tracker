@@ -4,6 +4,7 @@ import {
   Paper, ThemeProvider, createMuiTheme, IconButton, Typography, Button, Container,
   Dialog, DialogTitle, DialogContentText, DialogContent, TextField, DialogActions, Select, MenuItem
 } from '@material-ui/core'
+import { Autocomplete } from '@material-ui/lab'
 import { makeStyles } from '@material-ui/core/styles'
 import EditDialog from './Dialogs/EditDialog'
 import { Delete } from '@material-ui/icons'
@@ -58,11 +59,12 @@ const PortfolioPage = ({ socket }: any) => {
   const [portfolioArray, setPortfolioArray] = React.useState<any>({})
   const [stockArray, setStockArray] = React.useState<any>({})
   const [openAdd, setOpenAdd] = React.useState<boolean>(false)
-  const [currentStockId, setCurrentStockId] = React.useState<string>("AIR")
+  const [currentStockId, setCurrentStockId] = React.useState<string>("")
   const [currentQuantity, setCurrentQuantity] = React.useState<number>(0)
   const [check, setCheck] = React.useState<boolean>(false)
   const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
   const [count, setCount] = React.useState<number>(0)
+  const stockCode = React.createRef<any>()
 
   socket.on("update", () => {
     setCount(count + 1)
@@ -80,11 +82,24 @@ const PortfolioPage = ({ socket }: any) => {
     setCurrentQuantity(event.target.value)
   ]
 
-  const handleSelect = (event: any) => {
-    setCurrentStockId(event.target.value)
+  const handleSelect = (event: any, value: any) => {
+    if (value === undefined || value === null) {
+      return
+    }
+    const code = value.split(" ")[0].trim()
+    console.log(code)
+    setCurrentStockId(code)
   }
 
   const handleStockAdd = () => {
+    if (currentStockId.trim() === "") {
+      alert("Please enter the stock code")
+      return
+    }
+    if (currentQuantity === 0) {
+      alert("Quantity cannot be zero")
+      return
+    }
     PortfolioAPI.add(cookies["SESSION_ID"], currentQuantity, currentStockId)
       .then(response => {
         alert("New portfolio added!")
@@ -170,6 +185,7 @@ const PortfolioPage = ({ socket }: any) => {
         <Container>
           <Button onClick={handleClickOpen} variant="contained" color="primary" style={{ marginTop: theme.spacing(3), marginBottom: theme.spacing(3) }}>Add new portfolio</Button>
         </Container>
+
         <Dialog open={openAdd} onClose={handleClickClose} maxWidth="xs">
           <DialogTitle id="form-dialog-title">Add portfolio</DialogTitle>
           <DialogContent>
@@ -179,19 +195,14 @@ const PortfolioPage = ({ socket }: any) => {
             <Typography variant="body1">
               Stock Code
           </Typography>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={currentStockId}
+            <Autocomplete
+              options={stockArray.map((currentValue: any) => currentValue.ticker + " (" + currentValue.name + ")")}
               onChange={handleSelect}
               fullWidth
-            >
-              {stockArray.map((currentValue: any) => {
-                return (
-                  <MenuItem value={currentValue.ticker} key={currentValue.id}>{currentValue.ticker}{" ("}{currentValue.name}{")"}</MenuItem>
-                )
-              })}
-            </Select>
+              renderInput={(params) => (
+                <TextField {...params} label="" fullWidth required />
+              )}
+            />
             <TextField
               autoFocus
               margin="dense"
@@ -208,6 +219,7 @@ const PortfolioPage = ({ socket }: any) => {
           </Button>
           </DialogActions>
         </Dialog>
+
         <TableContainer component={Paper} className={classes.container}>
           <Table className={classes.table} aria-label="simple table">
             <TableHead style={{ backgroundColor: "rgb(159 164 169 / 53%)" }}>
