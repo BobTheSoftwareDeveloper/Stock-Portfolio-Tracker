@@ -8,6 +8,9 @@ import StockPage from './Components/StockPage'
 import HomePage from './Components/HomePage'
 import Settings from './Components/Settings'
 import { useCookies } from 'react-cookie'
+import socketIOClient from 'socket.io-client'
+
+const backend: string = String(process.env.REACT_APP_BACKEND_URL)
 
 interface IState {
   authenticated: boolean,
@@ -21,37 +24,30 @@ const App = () => {
   const [tab, setTab] = React.useState<number>(localStorage.getItem("tab") !== null ? Number(localStorage.getItem("tab")) : 0)
   const [currentView, setCurrentView] = React.useState<any>("")
   const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
+  const [socket, setSocket] = React.useState<any>(socketIOClient(backend))
+  const [count, setCount] = React.useState<number>(0)
 
   React.useEffect(() => {
-    const newValue = localStorage.getItem("tab") !== null ? Number(localStorage.getItem("tab")) : 0
     if (cookies["SESSION_ID"] !== undefined) {
-      switch (newValue) {
-        case 0:
-          setCurrentView(<HomePage />)
-          break;
-        case 1:
-          setCurrentView(<PortfolioPage />)
-          break;
-        case 2:
-          setCurrentView(<StockPage />)
-          break;
-        case 3:
-          setCurrentView(<Settings />)
-          break;
-      }
+      socket.emit("SESSION_ID", cookies["SESSION_ID"])
     }
   }, [])
 
-  const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
+  React.useEffect(() => {
+    const newValue = localStorage.getItem("tab") !== null ? Number(localStorage.getItem("tab")) : 0
+    changeTab(null, newValue)
+  }, [])
+
+  const changeTab = (event: any, newValue: number) => {
     localStorage.setItem("tab", newValue.toString())
 
     if (cookies["SESSION_ID"] !== undefined) {
       switch (newValue) {
         case 0:
-          setCurrentView(<HomePage />)
+          setCurrentView(<HomePage socket={socket} />)
           break;
         case 1:
-          setCurrentView(<PortfolioPage />)
+          setCurrentView(<PortfolioPage socket={socket}/>)
           break;
         case 2:
           setCurrentView(<StockPage />)

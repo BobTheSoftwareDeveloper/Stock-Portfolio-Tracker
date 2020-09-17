@@ -53,16 +53,20 @@ const useStyles = makeStyles({
   }
 });
 
-const PortfolioPage = () => {
+const PortfolioPage = ({ socket }: any) => {
   const classes = useStyles();
   const [portfolioArray, setPortfolioArray] = React.useState<any>({})
   const [stockArray, setStockArray] = React.useState<any>({})
-  const [count, setCount] = React.useState<number>(0)
   const [openAdd, setOpenAdd] = React.useState<boolean>(false)
   const [currentStockId, setCurrentStockId] = React.useState<string>("AIR")
   const [currentQuantity, setCurrentQuantity] = React.useState<number>(0)
   const [check, setCheck] = React.useState<boolean>(false)
   const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
+  const [count, setCount] = React.useState<number>(0)
+
+  socket.on("update", () => {
+    setCount(count + 1)
+  })
 
   const handleClickOpen = () => {
     setOpenAdd(true)
@@ -85,7 +89,7 @@ const PortfolioPage = () => {
       .then(response => {
         alert("New portfolio added!")
         setCheck(false)
-        setCount(count + 1)
+        socket.emit("update", cookies["SESSION_ID"])
         setOpenAdd(false)
       })
       .catch(err => {
@@ -148,15 +152,13 @@ const PortfolioPage = () => {
               quantity={currentValue.quantity}
               stockId={currentValue.stock_ticker}
               currentStockData={stockArray}
-              count={count}
-              setCount={setCount}
+              socket={socket}
             />
             <DeleteDialog
               sessionId={cookies["SESSION_ID"]}
               source={"portfolio"}
               id={currentValue.id}
-              count={count}
-              setCount={setCount}
+              socket={socket}
             />
           </TableCell>
         </TableRow>

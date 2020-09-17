@@ -9,18 +9,20 @@ import StockAPI from './Utilities/StockAPI'
 import PortfolioAPI from './Utilities/PortfolioAPI'
 import CheckLogin from './Utilities/CheckLogin'
 // import { Twitter, Facebook, Google, Pinterest, Reddit  } from 'react-social-sharing'
-import { FacebookShareButton, FacebookIcon,
-EmailShareButton, EmailIcon,
-PinterestShareButton, PinterestIcon,
-RedditShareButton, RedditIcon,
-TwitterShareButton, TwitterIcon,
-WhatsappShareButton, WhatsappIcon } from "react-share"
+import {
+  FacebookShareButton, FacebookIcon,
+  EmailShareButton, EmailIcon,
+  PinterestShareButton, PinterestIcon,
+  RedditShareButton, RedditIcon,
+  TwitterShareButton, TwitterIcon,
+  WhatsappShareButton, WhatsappIcon
+} from "react-share"
 
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 const theme = createMuiTheme();
 
-const HomePage = () => {
+const HomePage = ({ socket }: any) => {
   const [portfolioArray, setPortfolioArray] = React.useState<any>([])
   const [stockArray, setStockArray] = React.useState<any>([])
   const [check, setCheck] = React.useState<boolean>(false)
@@ -28,6 +30,10 @@ const HomePage = () => {
   const [count, setCount] = React.useState<number>(0)
   const canvasRef = React.createRef<any>()
   const websiteUrl: string = "https://stockportfoliotracker.azurewebsites.net/"
+
+  socket.on("update", () => {
+    setCount(count + 1)
+  })
 
   React.useEffect(() => {
     CheckLogin.CheckLogin(cookies["SESSION_ID"])
@@ -131,22 +137,22 @@ const HomePage = () => {
           </div>
           <div style={{ width: '100%', height: 'auto' }}>
             <Typography variant="body1">Share my current portfolio:</Typography>
-            <EmailShareButton url={websiteUrl} subject="Sharing an amazing website with you" body={shareText} style={{ marginLeft: 5, marginRight: 5}}>
+            <EmailShareButton url={websiteUrl} subject="Sharing an amazing website with you" body={shareText} style={{ marginLeft: 5, marginRight: 5 }}>
               <EmailIcon size={32} round />
             </EmailShareButton>
-            <FacebookShareButton url={websiteUrl} quote={shareText} style={{ marginLeft: 5, marginRight: 5}}>
+            <FacebookShareButton url={websiteUrl} quote={shareText} style={{ marginLeft: 5, marginRight: 5 }}>
               <FacebookIcon size={32} round />
             </FacebookShareButton>
-            <TwitterShareButton url={websiteUrl} title={`${shareText}`} style={{ marginLeft: 5, marginRight: 5}}>
+            <TwitterShareButton url={websiteUrl} title={`${shareText}`} style={{ marginLeft: 5, marginRight: 5 }}>
               <TwitterIcon size={32} round />
             </TwitterShareButton>
-            <RedditShareButton url={websiteUrl} title={shareText} style={{ marginLeft: 5, marginRight: 5}}>
+            <RedditShareButton url={websiteUrl} title={shareText} style={{ marginLeft: 5, marginRight: 5 }}>
               <RedditIcon size={32} round />
             </RedditShareButton>
-            <PinterestShareButton url={websiteUrl} description={shareText} media={websiteUrl} style={{ marginLeft: 5, marginRight: 5}}>
+            <PinterestShareButton url={websiteUrl} description={shareText} media={websiteUrl} style={{ marginLeft: 5, marginRight: 5 }}>
               <PinterestIcon size={32} round />
             </PinterestShareButton>
-            <WhatsappShareButton url={websiteUrl} title={shareText} style={{ marginLeft: 5, marginRight: 5}}>
+            <WhatsappShareButton url={websiteUrl} title={shareText} style={{ marginLeft: 5, marginRight: 5 }}>
               <WhatsappIcon size={32} round />
             </WhatsappShareButton>
           </div>

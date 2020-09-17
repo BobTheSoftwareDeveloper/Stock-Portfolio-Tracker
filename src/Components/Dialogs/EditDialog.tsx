@@ -10,12 +10,11 @@ interface Edit {
   portfolioId: number,
   quantity: number,
   stockId: string,
-  count: number,
-  setCount: any,
+  socket: any,
   currentStockData: any
 }
 
-const EditDialog = ({ sessionId, portfolioId, quantity, stockId, count, setCount, currentStockData }: Edit) => {
+const EditDialog = ({ sessionId, portfolioId, quantity, stockId, socket, currentStockData }: Edit) => {
   const [openEdit, setOpenEdit] = React.useState<boolean>(false)
   const [stockData, setStockData] = React.useState<any>(currentStockData)
   const [currentStockId, setCurrentStockId] = React.useState<string>(stockId)
@@ -37,7 +36,7 @@ const EditDialog = ({ sessionId, portfolioId, quantity, stockId, count, setCount
     PortfolioAPI.update(sessionId, portfolioId, currentQuantity, currentStockId)
       .then(response => {
         alert("Successfully edited!")
-        setCount(count + 1)
+        socket.emit("update", sessionId)
         setOpenEdit(false)
       })
       .catch(err => {

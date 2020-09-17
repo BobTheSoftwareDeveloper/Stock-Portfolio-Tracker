@@ -8,11 +8,10 @@ interface Items {
   sessionId: string,
   source: string,
   id: number,
-  count: number,
-  setCount: any
+  socket: any
 }
 
-const DeleteDialog = ({ sessionId, source, id, count, setCount }: Items) => {
+const DeleteDialog = ({ sessionId, source, id, socket }: Items) => {
   const [open, setOpen] = React.useState<boolean>(false)
 
   const handleClose = () => {
@@ -27,7 +26,7 @@ const DeleteDialog = ({ sessionId, source, id, count, setCount }: Items) => {
     PortfolioAPI.remove(sessionId, id)
       .then(response => {
         alert("Successfully deleted!")
-        setCount(count + 1)
+        socket.emit("update", sessionId)
       })
       .catch(err => {
         alert("Error: " + err)
