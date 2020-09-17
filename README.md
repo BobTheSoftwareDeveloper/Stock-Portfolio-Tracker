@@ -7,7 +7,7 @@ Here is a link to my deployed [React project](https://stockportfoliotracker.azur
 - Password: MSA2020isCool! (case sensitive)
 #### Features:
 - Uses React with Typescript
-- Connects to my own [API](https://github.com/BobTheSoftwareDeveloper/StockPortfolioAPI/) created with ASP .NET Core
+- Connects to my own [API](https://github.com/BobTheSoftwareDeveloper/Stock-Portfolio-Tracker-Backend) created with Node JS Express
 - Utilises CRUD operations through the API
 - Uses Material-UI, axios, canvasjs, and react-spinners
 - Sign-in verification through the use of REST API
@@ -15,9 +15,6 @@ Here is a link to my deployed [React project](https://stockportfoliotracker.azur
 - Colourful and interactive chart through the use of canvasjs
 - Promise based HTTP request through axios
 - Loading spinner with react-spinners
-
---
-If any MSPs reading this has experience with setting up a login/sign-up environment (front-end and back-end), could you please give me some advice and point me in the right direction? 
 
 ### DevOps:
 [Deployed website](https://stockportfoliotracker.azurewebsites.net/)
