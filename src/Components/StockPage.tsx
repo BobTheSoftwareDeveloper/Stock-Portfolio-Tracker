@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Loading from './Loading'
 import { useCookies } from 'react-cookie'
 import StockAPI from './Utilities/StockAPI'
+import CheckLogin from './Utilities/CheckLogin'
 
 interface StockData {
   [index: number]: {
@@ -40,6 +41,15 @@ const StockPage = () => {
   const [cookies, setCookie, removeCookie] = useCookies(['SESSION_ID'])
 
   const classes = useStyles()
+
+  React.useEffect(() => {
+    CheckLogin.CheckLogin(cookies["SESSION_ID"])
+      .then(response => { })
+      .catch(err => {
+        removeCookie("SESSION_ID")
+        window.location.href = "/"
+      })
+  }, [])
 
   React.useEffect(() => {
     StockAPI.get(cookies["SESSION_ID"])

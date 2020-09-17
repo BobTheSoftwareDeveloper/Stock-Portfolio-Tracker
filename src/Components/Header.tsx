@@ -1,7 +1,6 @@
 import React from 'react'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { AppBar, Toolbar, IconButton, Typography, Button } from '@material-ui/core'
-import { Menu } from '@material-ui/icons'
 import { useCookies } from 'react-cookie'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -10,7 +9,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
     },
     title: {
-      flex: 1,
+      display: 'inline-block',
       textAlign: 'left'
     },
   }),
@@ -33,10 +32,14 @@ export default function Header() {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <Typography component="h1" variant="h6" className={classes.title}>
+          {/* <Typography component="h1" variant="h6" className={classes.title}>
             Stock Portfolio Tracker
-          </Typography>
-          <Button color="inherit" onClick={handleButtonClick}>
+          </Typography> */}
+          <div style={{ height: '100%' }}>
+            <img src="/logo.png" alt="Logo" className={classes.title} style={{ width: 230, height: '100%' }}></img>
+          </div>
+          <div style={{ flex: 1 }}></div>
+          <Button color="secondary" variant="contained" onClick={handleButtonClick}>
             {cookies["SESSION_ID"] !== undefined ? "Logout" : "Login"}
           </Button>
         </Toolbar>

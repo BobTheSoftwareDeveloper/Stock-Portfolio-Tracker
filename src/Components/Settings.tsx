@@ -9,6 +9,7 @@ import axios from 'axios'
 import Loading from './Loading'
 import { useCookies } from 'react-cookie'
 import QRCode from 'qrcode'
+import CheckLogin from './Utilities/CheckLogin'
 
 interface StockData {
   [index: number]: {
@@ -56,6 +57,15 @@ const Settings = () => {
   const [backDropOpen, setBackDropOpen] = React.useState<boolean>(false)
   const [verifiedStatus, setVerifiedStatus] = React.useState<boolean>(false)
   const [count, setCount] = React.useState<number>(0)
+
+  React.useEffect(() => {
+    CheckLogin.CheckLogin(cookies["SESSION_ID"])
+      .then(response => { })
+      .catch(err => {
+        removeCookie("SESSION_ID")
+        window.location.href = "/"
+      })
+  }, [])
 
   const handleClose = () => {
     setOpen(false)
@@ -151,7 +161,7 @@ const Settings = () => {
         <Paper className={classes.paper}>
           <Grid container spacing={3} style={{ marginTop: 20 }}>
             <Grid item xs={12} sm={6}>
-              <Typography variant="body1" align="left" style={{ fontWeight: 600, marginBottom: 20 }}>
+              <Typography variant="body1" align="center" style={{ fontWeight: 600, marginBottom: 20 }}>
                 Change Password:
               </Typography>
               <TextField
@@ -185,8 +195,8 @@ const Settings = () => {
                 Update Password
               </Button>
             </Grid>
-            <Grid item xs={12} sm={6} style={{ textAlign: 'left' }}>
-              <Typography variant="body1" align="left" style={{ fontWeight: 600, marginBottom: 20 }}>
+            <Grid item xs={12} sm={6} style={{ textAlign: 'center' }}>
+              <Typography variant="body1" align="center" style={{ fontWeight: 600, marginBottom: 20 }}>
                 Two-Factor Authentication:
               </Typography>
               {verifiedStatus === false ?

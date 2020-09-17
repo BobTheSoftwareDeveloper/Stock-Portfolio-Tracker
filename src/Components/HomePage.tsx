@@ -7,6 +7,7 @@ import Loading from './Loading'
 import { useCookies } from 'react-cookie'
 import StockAPI from './Utilities/StockAPI'
 import PortfolioAPI from './Utilities/PortfolioAPI'
+import CheckLogin from './Utilities/CheckLogin'
 // import { Twitter, Facebook, Google, Pinterest, Reddit  } from 'react-social-sharing'
 import { FacebookShareButton, FacebookIcon,
 EmailShareButton, EmailIcon,
@@ -29,20 +30,11 @@ const HomePage = () => {
   const websiteUrl: string = "https://stockportfoliotracker.azurewebsites.net/"
 
   React.useEffect(() => {
-    const url: string = process.env.REACT_APP_BACKEND_URL + "api/check-session"
-    axios
-      .post(url, {
-        session_id: cookies["SESSION_ID"]
-      })
-      .then((res) => {
-        // valid
-        return true
-      })
-      .catch((error) => {
-        // invalid
+    CheckLogin.CheckLogin(cookies["SESSION_ID"])
+      .then(response => { })
+      .catch(err => {
         removeCookie("SESSION_ID")
         window.location.href = "/"
-        return false
       })
   }, [])
 
