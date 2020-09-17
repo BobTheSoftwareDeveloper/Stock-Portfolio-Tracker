@@ -3,8 +3,14 @@
 ### Front-End:
 Here is a link to my deployed [React project](https://stockportfoliotracker.azurewebsites.net/).
 #### Login details:
-- Username: bob (case sensitive)
-- Password: MSA2020isCool! (case sensitive)
+- Username: demo (case sensitive)
+- Password: 1234 (case sensitive)
+#### Technologies used:
+MERN Stack
+- MongoDB
+- Express
+- React
+- NodeJS
 #### Features:
 - Uses React with Typescript
 - Connects to my own [API](https://github.com/BobTheSoftwareDeveloper/Stock-Portfolio-Tracker-Backend) created with Node JS Express
@@ -15,6 +21,22 @@ Here is a link to my deployed [React project](https://stockportfoliotracker.azur
 - Colourful and interactive chart through the use of canvasjs
 - Promise based HTTP request through axios
 - Loading spinner with react-spinners
+
+#### Advanced Features:
+- Two factor authentications (TOTP/Time-based One Time Password)
+- Custom branding - custom logo and theme
+- Web scrapping the NZX (New Zealand Exchange) website to get a list of company name, code, and current price.
+- Real time syncing between the same account (using Socket.io)
+- Social media intergration (share current portfolio)
+  - Email
+  - Facebook
+  - Twitter
+  - Reddit
+  - Pinterest
+  - Whatsapp
+- Session based login (each API call requires a valid session)
+- Relationship database with relationships between tables
+- Responsive UI (Web and Mobile)
 
 ### DevOps:
 [Deployed website](https://stockportfoliotracker.azurewebsites.net/)
